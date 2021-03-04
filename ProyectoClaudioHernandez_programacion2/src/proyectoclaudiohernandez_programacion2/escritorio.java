@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Component;
 import AppPackage.AnimationClass;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +20,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
@@ -40,6 +44,8 @@ import javax.swing.tree.DefaultTreeModel;
  */
 public class escritorio extends javax.swing.JFrame {
 
+    static login login = new login();
+
     /**
      * Creates new form escritorio
      */
@@ -47,6 +53,8 @@ public class escritorio extends javax.swing.JFrame {
 
         initComponents();
         setExtendedState(MAXIMIZED_BOTH);
+        //cmdTexto.setBackground(new Color(0,0,0,64));
+
         doc = tp_texto.getStyledDocument();
 
         estilo = tp_texto.addStyle("miEstilo", null);
@@ -58,6 +66,28 @@ public class escritorio extends javax.swing.JFrame {
             modelo.addElement(fontNames[i]);
         }
         cb_font.setModel(modelo);
+        String usa = login.usuarioActual.getUsuario();
+        DefaultMutableTreeNode n = new DefaultMutableTreeNode("z:/");
+        DefaultMutableTreeNode n1 = new DefaultMutableTreeNode(usa);
+
+        DefaultTreeModel m = (DefaultTreeModel) explorador.getModel();
+        File f ;
+        if (login.usuarioActual.isAdminOno()) {
+            f = new File("./z");
+        }else{
+            f = new File("./z" + "/" + usa);
+        
+       }
+        m.setRoot(new DefaultMutableTreeNode(f.getName()));
+        listar_todo(f, (DefaultMutableTreeNode) m.getRoot());
+        if (login.usuarioActual.isAdminOno()) {
+            cmdTexto.setText("z/");
+        } else {
+
+            cmdTexto.setText("z/" + login.usuarioActual.getUsuario() + "/");
+
+        }
+        barra2Windows.setVisible(false);
 
     }
 
@@ -95,6 +125,13 @@ public class escritorio extends javax.swing.JFrame {
         exploradorDeArchivos = new javax.swing.JDialog();
         jScrollPane2 = new javax.swing.JScrollPane();
         explorador = new javax.swing.JTree();
+        jPanel5 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        panelArchivo = new javax.swing.JTextArea();
+        cmd = new javax.swing.JDialog();
+        jPanel4 = new javax.swing.JPanel();
+        scrollAver = new javax.swing.JScrollPane();
+        cmdTexto = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
@@ -110,17 +147,25 @@ public class escritorio extends javax.swing.JFrame {
         jButton14 = new javax.swing.JButton();
         jButton13 = new javax.swing.JButton();
         jButton17 = new javax.swing.JButton();
+        botonCMD = new javax.swing.JButton();
+        jButton18 = new javax.swing.JButton();
+        barra2Windows = new javax.swing.JPanel();
+        jButton19 = new javax.swing.JButton();
+        jButton20 = new javax.swing.JButton();
 
         editorTexto.getContentPane().setLayout(new javax.swing.OverlayLayout(editorTexto.getContentPane()));
 
-        jPanel1.setBackground(new java.awt.Color(153, 153, 153));
+        jPanel1.setBackground(new java.awt.Color(0, 153, 204));
 
+        tp_texto.setBackground(new java.awt.Color(255, 255, 255));
         tp_texto.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         jScrollPane1.setViewportView(tp_texto);
 
         jButton8.setBackground(new java.awt.Color(153, 153, 153));
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoclaudiohernandez_programacion2/imagenes/folder.png"))); // NOI18N
         jButton8.setBorder(null);
+        jButton8.setBorderPainted(false);
+        jButton8.setContentAreaFilled(false);
         jButton8.setFocusable(false);
         jButton8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -133,6 +178,8 @@ public class escritorio extends javax.swing.JFrame {
         jButton7.setBackground(new java.awt.Color(153, 153, 153));
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoclaudiohernandez_programacion2/imagenes/floppy-disk(3).png"))); // NOI18N
         jButton7.setBorder(null);
+        jButton7.setBorderPainted(false);
+        jButton7.setContentAreaFilled(false);
         jButton7.setFocusable(false);
         jButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -151,6 +198,7 @@ public class escritorio extends javax.swing.JFrame {
         jToolBar3.setRollover(true);
         jToolBar3.setBorderPainted(false);
 
+        cb_font.setBackground(new java.awt.Color(255, 255, 255));
         cb_font.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cb_fontItemStateChanged(evt);
@@ -158,6 +206,7 @@ public class escritorio extends javax.swing.JFrame {
         });
         jToolBar3.add(cb_font);
 
+        cb_tamaño.setBackground(new java.awt.Color(255, 255, 255));
         cb_tamaño.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "12", "18", "24", "36", "48", "60", "72" }));
         cb_tamaño.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -267,9 +316,9 @@ public class escritorio extends javax.swing.JFrame {
         jButton6.setText("jButton6");
         editorTexto.getContentPane().add(jButton6);
 
-        jMenuBar1.setBackground(new java.awt.Color(153, 153, 153));
+        jMenuBar1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jMenu1.setBackground(new java.awt.Color(153, 153, 153));
+        jMenu1.setBackground(new java.awt.Color(255, 255, 255));
         jMenu1.setForeground(new java.awt.Color(0, 51, 255));
         jMenu1.setText("File");
 
@@ -307,23 +356,92 @@ public class escritorio extends javax.swing.JFrame {
 
         editorTexto.setJMenuBar(jMenuBar1);
 
-        explorador.setBackground(new java.awt.Color(255, 255, 255));
+        explorador.setBackground(new java.awt.Color(102, 204, 255));
         explorador.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 153, 153)));
         explorador.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        explorador.setForeground(new java.awt.Color(255, 255, 255));
-        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("z:/");
+        explorador.setForeground(new java.awt.Color(102, 204, 0));
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("z/:");
         explorador.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        explorador.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                exploradorMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(explorador);
+
+        jPanel5.setBackground(new java.awt.Color(0, 51, 102));
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+
+        panelArchivo.setBackground(new java.awt.Color(255, 255, 255));
+        panelArchivo.setColumns(20);
+        panelArchivo.setRows(5);
+        jScrollPane3.setViewportView(panelArchivo);
 
         javax.swing.GroupLayout exploradorDeArchivosLayout = new javax.swing.GroupLayout(exploradorDeArchivos.getContentPane());
         exploradorDeArchivos.getContentPane().setLayout(exploradorDeArchivosLayout);
         exploradorDeArchivosLayout.setHorizontalGroup(
             exploradorDeArchivosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 827, Short.MAX_VALUE)
+            .addGroup(exploradorDeArchivosLayout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE))
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         exploradorDeArchivosLayout.setVerticalGroup(
             exploradorDeArchivosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
+            .addGroup(exploradorDeArchivosLayout.createSequentialGroup()
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(exploradorDeArchivosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jPanel4.setBackground(new java.awt.Color(0, 0, 0));
+
+        cmdTexto.setBackground(new java.awt.Color(0, 0, 0));
+        cmdTexto.setColumns(20);
+        cmdTexto.setForeground(new java.awt.Color(51, 255, 51));
+        cmdTexto.setRows(5);
+        cmdTexto.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        cmdTexto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                cmdTextoKeyPressed(evt);
+            }
+        });
+        scrollAver.setViewportView(cmdTexto);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(scrollAver, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 875, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(scrollAver, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout cmdLayout = new javax.swing.GroupLayout(cmd.getContentPane());
+        cmd.getContentPane().setLayout(cmdLayout);
+        cmdLayout.setHorizontalGroup(
+            cmdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        cmdLayout.setVerticalGroup(
+            cmdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -429,16 +547,84 @@ public class escritorio extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton17);
 
+        botonCMD.setBackground(new java.awt.Color(0, 51, 51));
+        botonCMD.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoclaudiohernandez_programacion2/imagenes/command-line.png"))); // NOI18N
+        botonCMD.setFocusable(false);
+        botonCMD.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonCMD.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botonCMD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonCMDActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(botonCMD);
+
+        jButton18.setBackground(new java.awt.Color(0, 51, 51));
+        jButton18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoclaudiohernandez_programacion2/imagenes/notebook.png"))); // NOI18N
+        jButton18.setFocusable(false);
+        jButton18.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton18.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButton18);
+
+        barra2Windows.setBackground(new java.awt.Color(0, 102, 153));
+
+        jButton19.setBackground(new java.awt.Color(0, 102, 204));
+        jButton19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoclaudiohernandez_programacion2/imagenes/login(1).png"))); // NOI18N
+        jButton19.setBorderPainted(false);
+        jButton19.setContentAreaFilled(false);
+        jButton19.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton19ActionPerformed(evt);
+            }
+        });
+
+        jButton20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyectoclaudiohernandez_programacion2/imagenes/boton-de-encendido.png"))); // NOI18N
+        jButton20.setBorderPainted(false);
+        jButton20.setContentAreaFilled(false);
+        jButton20.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton20ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout barra2WindowsLayout = new javax.swing.GroupLayout(barra2Windows);
+        barra2Windows.setLayout(barra2WindowsLayout);
+        barra2WindowsLayout.setHorizontalGroup(
+            barra2WindowsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(barra2WindowsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(barra2WindowsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, barra2WindowsLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        barra2WindowsLayout.setVerticalGroup(
+            barra2WindowsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(barra2WindowsLayout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(46, 46, 46)
+                .addComponent(jButton20, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(317, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 2386, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(barra2Windows, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 2351, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 607, Short.MAX_VALUE)
+                .addGap(108, 108, 108)
+                .addComponent(barra2Windows, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -464,36 +650,82 @@ public class escritorio extends javax.swing.JFrame {
 
 // TODO add your handling code here:
     }//GEN-LAST:event_jButton7ActionPerformed
+    public void listar_todo(File p_raiz, DefaultMutableTreeNode nodo) {
+        try {
+            ArrayList<File> l1 = new ArrayList();
+            ArrayList<File> l2 = new ArrayList();
+            ArrayList<File> l3 = new ArrayList();
+            for (File f : p_raiz.listFiles()) {
+                if (f.isDirectory()) {
+                    l1.add(f);
+                } else {
+                    l2.add(f);
+                }
+            }
+            l3.addAll(l1);
+            l3.addAll(l2);
 
+            for (File temp : l3) {
+                if (temp.isFile()) {
+                    DefaultMutableTreeNode n = new DefaultMutableTreeNode(
+                            temp.getName());
+                    nodo.add(n);
+                } else {
+                    DefaultMutableTreeNode n = new DefaultMutableTreeNode(
+                            temp.getName());
+                    nodo.add(n);
+                    listar_todo(temp, n);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void listar_no_orden(File p_raiz, DefaultMutableTreeNode nodo) {
+        try {
+            for (File temp : p_raiz.listFiles()) {
+                if (temp.isFile()) {
+                    DefaultMutableTreeNode n = new DefaultMutableTreeNode(
+                            temp.getName());
+                    nodo.add(n);
+                } else {
+                    DefaultMutableTreeNode n = new DefaultMutableTreeNode(
+                            temp.getName());
+                    nodo.add(n);
+                    listar_no_orden(temp, n);
+                }
+            }
+        } catch (Exception e) {
+        }
+    }
     private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
 
         AbrirTexto();
     }//GEN-LAST:event_jButton8MouseClicked
     public void AbrirTexto() {
-         File fichero = null;
+        String u = login.usuarioActual.getUsuario();
+        File fichero = null;
         FileInputStream entrada = null;
-        ObjectInputStream objeto = null;        
+        ObjectInputStream objeto = null;
         try {
-            JFileChooser jfc = new JFileChooser();
+            JFileChooser jfc = new JFileChooser("./z" + "/" + u);
             FileNameExtensionFilter filtro = new FileNameExtensionFilter("claudio", "cahz");
-            jfc.setFileFilter(filtro);                   
+            jfc.setFileFilter(filtro);
             int seleccion = jfc.showOpenDialog(this);
-            if (seleccion == JFileChooser.APPROVE_OPTION)
-            {
-               fichero = jfc.getSelectedFile();
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                fichero = jfc.getSelectedFile();
                 entrada
-                    = new FileInputStream(fichero);
-                 objeto
-                    = new ObjectInputStream(entrada);              
-               tp_texto.setText("");  
-               Documento temp=(Documento)objeto.readObject();
-               tp_texto.setText( ((Documento)  temp  ).getPanel().getText() );
-               tp_texto.setDocument( ((Documento)temp  ).getDoc()   ) ;
-                
-               
-               
+                        = new FileInputStream(fichero);
+                objeto
+                        = new ObjectInputStream(entrada);
+                tp_texto.setText("");
+                Documento temp = (Documento) objeto.readObject();
+                tp_texto.setText(((Documento) temp).getPanel().getText());
+                tp_texto.setDocument(((Documento) temp).getDoc());
+
             } //fin if
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -506,8 +738,9 @@ public class escritorio extends javax.swing.JFrame {
     }
 
     public void crearArchivoTexto() {
-        JFileChooser jfc = new JFileChooser();
-        FileNameExtensionFilter filtro = new FileNameExtensionFilter( "claudio", "cahz");
+        String usu = login.usuarioActual.getUsuario();
+        JFileChooser jfc = new JFileChooser("./z" + "/" + usu);
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("claudio", "cahz");
         jfc.setFileFilter(filtro);
         int seleccion = jfc.showSaveDialog(this);
         FileOutputStream fw = null;
@@ -681,15 +914,21 @@ public class escritorio extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        DefaultTreeModel m = (DefaultTreeModel) explorador.getModel();
+        String usa = login.usuarioActual.getUsuario();
+        DefaultMutableTreeNode n = new DefaultMutableTreeNode("z:/");
+        DefaultMutableTreeNode n1 = new DefaultMutableTreeNode(usa);
 
-        DefaultMutableTreeNode raiz = (DefaultMutableTreeNode) m.getRoot();
-        DefaultMutableTreeNode n2 = new DefaultMutableTreeNode("Mis Documentos");
-        DefaultMutableTreeNode n3 = new DefaultMutableTreeNode("Mi musica");
-        DefaultMutableTreeNode n4 = new DefaultMutableTreeNode("Mis mensajes");
-        DefaultMutableTreeNode n5 = new DefaultMutableTreeNode("envio de correo");
-        // raiz.add(n2);
-        // m.reload();
+        DefaultTreeModel m = (DefaultTreeModel) explorador.getModel();
+        File f ;
+        if (login.usuarioActual.isAdminOno()) {
+            f = new File("./z");
+        }else{
+            f = new File("./z" + "/" + usa);
+        
+       }
+
+        m.setRoot(new DefaultMutableTreeNode(f.getName()));
+        listar_todo(f, (DefaultMutableTreeNode) m.getRoot());
         exploradorDeArchivos.pack();
         exploradorDeArchivos.setLocationRelativeTo(this);
         exploradorDeArchivos.setVisible(true);
@@ -697,8 +936,133 @@ public class escritorio extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        barra2Windows.setVisible(true);
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void botonCMDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCMDActionPerformed
+        cmd.pack();
+        cmd.setLocationRelativeTo(this);
+        cmd.setVisible(true);
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonCMDActionPerformed
+    public void ponerTexto2() {
+        if (login.usuarioActual.isAdminOno()) {
+            cmdTexto.append("\n");
+
+            cmdTexto.append("z/");
+        } else {
+            cmdTexto.append("\n");
+
+            cmdTexto.setText("z/" + login.usuarioActual.getUsuario() + "/");
+
+        }
+
+    }
+    private void cmdTextoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cmdTextoKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+
+            String[] text1 = cmdTexto.getText().split("/");
+            String chekar = text1[text1.length - 1];
+            if (chekar.equals("time") || chekar.equals("Time")) {
+                Date fecha = new Date();
+                SimpleDateFormat sf = new SimpleDateFormat("hh:mm:a");
+                String fecha1 = sf.format(fecha);
+                cmdTexto.append("\n");
+                cmdTexto.append(fecha1);
+
+                ponerTexto2();
+
+            } else if (chekar.equals("date") || chekar.equals("Date")) {
+                Date fecha2 = new Date();
+                SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy");
+                String fecha1 = sf.format(fecha2);
+                cmdTexto.append("\n");
+                cmdTexto.append(fecha1);
+                ponerTexto2();
+            } else if (chekar.equals("Cd") || chekar.equals("cd")) {
+
+            } else if (chekar.equals("rm<''>") || chekar.equals("Rm<''>")) {
+                JOptionPane.showMessageDialog(this,
+                            "Holaaa");
+                String ruta = ".";
+                for (int i = 0; i < text1.length; i++) {
+
+                    ruta += "/";
+
+                    ruta += text1[i];
+
+                }
+                File archivoEliminar = new File(ruta);
+                if (archivoEliminar.delete() ) {
+                    JOptionPane.showMessageDialog(this,
+                            "El directorio se elimino");
+                }else{
+                JOptionPane.showMessageDialog(this,
+                            "El directorio no fue eliminado");
+                }
+
+            }else{
+                            cmdTexto.append("NO FUNCIONAAA");
+
+            }
+
+        }
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmdTextoKeyPressed
+
+    private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
+        System.exit(0);
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton20ActionPerformed
+
+    private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
+        login.primeravez=1;
+        login.setVisible(true);
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton19ActionPerformed
+
+    private void exploradorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exploradorMouseClicked
+            panelArchivo.setText("");
+
+        DefaultTreeModel m = (DefaultTreeModel) explorador.getModel();
+            String usu =  login.usuarioActual.getUsuario();
+                         DefaultMutableTreeNode n1 = new DefaultMutableTreeNode(usu);
+       if (evt.isMetaDown()) {
+       //seleccionar un nodo con click derecho
+            int row = explorador.getClosestRowForLocation(evt.getX(), evt.getY());
+            explorador.setSelectionRow(row);
+            Object v1 = explorador.getSelectionPath().getLastPathComponent();
+            String v2 =  v1.toString();
+          
+
+        
+        //JFileChooser fileChooser = new JFileChooser("./z" + "/" + usu);
+       // fileChooser.setFileSelectionMode(
+       //         JFileChooser.DIRECTORIES_ONLY);
+       // int seleccion = fileChooser.showOpenDialog(this);
+        //if (seleccion == JFileChooser.APPROVE_OPTION) {
+            File dir =  new File("./z"+"/"+usu);
+
+            File[] files = dir.listFiles();
+            
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    panelArchivo.append("Directorio:" + file.getName() + "\n");
+                    panelArchivo.append("\n");
+
+                }
+                if (file.isFile()) {
+                    
+                    panelArchivo.append("Archivo:" + file.getName() + "\n");
+                    panelArchivo.append("\n");
+                }
+            }
+        //}
+       }
+        // TODO add your handling code here:
+    }//GEN-LAST:event_exploradorMouseClicked
 
     public void interfaz() {
 
@@ -734,7 +1098,9 @@ public class escritorio extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new escritorio().setVisible(true);
+                //new escritorio().setVisible(true);
+                login.setLocationRelativeTo(null);
+                login.setVisible(true);
             }
         });
     }
@@ -742,8 +1108,12 @@ public class escritorio extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField BuscadorWindows;
+    private javax.swing.JPanel barra2Windows;
+    private javax.swing.JButton botonCMD;
     private javax.swing.JComboBox<String> cb_font;
     private javax.swing.JComboBox<String> cb_tamaño;
+    private javax.swing.JDialog cmd;
+    private javax.swing.JTextArea cmdTexto;
     private javax.swing.JDialog editorTexto;
     public javax.swing.JTree explorador;
     private javax.swing.JDialog exploradorDeArchivos;
@@ -757,7 +1127,10 @@ public class escritorio extends javax.swing.JFrame {
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
+    private javax.swing.JButton jButton18;
+    private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton20;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
@@ -771,8 +1144,11 @@ public class escritorio extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
@@ -780,11 +1156,14 @@ public class escritorio extends javax.swing.JFrame {
     private javax.swing.JToolBar.Separator jSeparator5;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar3;
+    private javax.swing.JTextArea panelArchivo;
+    private javax.swing.JScrollPane scrollAver;
     private javax.swing.JTextPane tp_texto;
     // End of variables declaration//GEN-END:variables
     StyledDocument doc;
     Style estilo;
     URL urlArchivoMusica;
     MP3Player reproductor;
+    String carpetaActual = "";
 
 }

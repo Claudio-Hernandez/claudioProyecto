@@ -5,9 +5,11 @@
  */
 package proyectoclaudiohernandez_programacion2;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -23,47 +25,17 @@ public class login extends javax.swing.JFrame {
     Dba db = new Dba("./base1.mdb");
     ResultSet rs;
     int NoUsuarios;
-
+    public  int primeravez=0;
     /**
      * Creates new form login
      */
     public login() {
 
         initComponents();
-        /* db.conectar();
-       // initComponents();
-        try {
-            db.query.execute("select tipoDeCuenta,usuario from alumnos");
-             rs = db.query.getResultSet();
-            while (rs.next()) {
-                System.out.println(rs.getInt(1) + "--->" + rs.getString(2));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        db.desconectar();
-        System.out.println("=========================");
-         
-        /*db.conectar();
-        try {
-            db.query.execute("SELECT COUNT(cuenta) FROM base1");
-            rs = db.query.getResultSet();
-            System.out.println(rs);
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        db.desconectar();
-         */
+        
         usuarios.add(new usuarios("claudio", "claudioben10"));
         usuarios.get(0).setAdminOno(true);
-        /*  DefaultTreeModel m = (DefaultTreeModel) c.explorador.getModel();
-        DefaultMutableTreeNode raiz  = (DefaultMutableTreeNode) m.getRoot();
-        DefaultMutableTreeNode nodo_persona;
-        nodo_persona= new DefaultMutableTreeNode(usuarios.get(0));
-        raiz.add(nodo_persona);
-        m.reload();
-         */
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -144,6 +116,7 @@ public class login extends javax.swing.JFrame {
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
         String u = usuario.getText();
         String c = contraseñaUsuario.getText();
+
         db.conectar();
         try {
             db.query.execute("select count(*) from alumnos where usuario= '" + u + "' and contraseña='" + c + "'");
@@ -153,32 +126,82 @@ public class login extends javax.swing.JFrame {
                 res = rs.getInt(1);
             }
             if (res == 0) {
+
                 JOptionPane.showMessageDialog(this, "Este usuario no existe, se te creara una cuenta");
                 db.query.execute("INSERT INTO alumnos"
                         + " (usuario,contraseña)"
                         + " VALUES ( '" + u + "','" + c + "')");
                 db.commit();
+                usuarios.add(new usuarios(u, c));
+                usuarios.get(usuarios.size() - 1).setAdminOno(false);
+                usuarioActual = usuarios.get(usuarios.size() - 1);
+
+                File dir = new File("./z" + "/" + usuarioActual.getUsuario());
+                boolean fueCreado = dir.mkdir();
+                if (fueCreado) {
+                    JOptionPane.showMessageDialog(this,
+                            "Directorio Creado exitosamente");
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "El directorio no fue creado");
+                }
+                File dir2 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mis documentos");
+                File dir3 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mis imagenes");
+                File dir4 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mi musica");
+                File dir5 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mi calendario");
+                File dir6 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mis correos");
+                File dir7 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mis mensajes");
+                dir2.mkdir();
+                dir3.mkdir();
+                dir4.mkdir();
+                dir5.mkdir();
+                dir6.mkdir();
+                dir7.mkdir();
+                if (primeravez==0) {
+                    escritorio esc = new escritorio();
+                esc.setVisible(true);
+                this.dispose();
+                }else if(primeravez==1){
+                    this.dispose();
+                }
+                
 
             } else if (res != 0 && u.equals("claudio") && c.equals("claudioben10")) {
                 usuarioActual = usuarios.get(0);
                 JOptionPane.showMessageDialog(this, "Bienvenido:" + u + "!");
-                usuarioActual = new usuarios(u, c);
-                usuarioActual.setAdminOno(false);
-
-                escritorio esc = new escritorio();
-              DefaultTreeModel m = (DefaultTreeModel) esc.explorador.getModel();
-                DefaultMutableTreeNode raiz = (DefaultMutableTreeNode) m.getRoot();
-                //esc.explorador.setModel(usuarioActual.archivos.getModel());
-                for (int i = 0; i <usuarios.size(); i++) {
-                     raiz.add(usuarioActual.mandarNodo());
-
+                usuarioActual.setAdminOno(true);
+                
+                File dir = new File("C:/Users/Claudio Hernandez/OneDrive/Desktop/proyecto/claudioProyecto/ProyectoClaudioHernandez_programacion2/z" + "/" + usuarioActual.getUsuario());
+                boolean fueCreado = dir.mkdir();
+                File dir2 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mis documentos");
+                File dir3 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mis imagenes");
+                File dir4 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mi musica");
+                File dir5 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mi calendario");
+                File dir6 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mis correos");
+                File dir7 = new File("./z" + "/" + usuarioActual.getUsuario()+"/"+"Mis mensajes");
+                dir2.mkdir();
+                dir3.mkdir();
+                dir4.mkdir();
+                dir5.mkdir();
+                dir6.mkdir();
+                dir7.mkdir();
+                if (fueCreado) {
+                    JOptionPane.showMessageDialog(this,
+                            "Directorio Creado exitosamente");
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "El directorio no fue creado");
                 }
-                m.reload();
-               this.dispose();
+                if (primeravez==0) {
+                    escritorio esc = new escritorio();
                 esc.setVisible(true);
+                this.dispose();
+                }else if(primeravez==1){
+                    this.dispose();
+                }
+                
             }
 
-            //+ " VALUES (' "+ 1 +" ', ' "+ usuario.getText() +" ','"+c+"')");
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
